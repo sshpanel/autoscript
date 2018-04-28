@@ -2,11 +2,20 @@
 #
 # Script by Aiman Amir
 # Telegram : @NamiaKai
+#
+# Modified by: SSHPANEL
+# Github: @sshpanel
 # ==================================================
 # 
 
+# Determine Sudo
+hash sudo &> /dev/null
+if [ $? -eq 1 ]; then
+    apt-get install sudo
+fi
+
 # install sertifikat
-apt-get install ca-certificates
+sudo apt-get install ca-certificates
 
 # initialisasi var
 export DEBIAN_FRONTEND=noninteractive
@@ -26,7 +35,8 @@ echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6
 sed -i '$ i\echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6' /etc/rc.local
 
 # install wget and curl
-apt-get update;apt-get -y install wget curl;
+apt-get update
+apt-get -y install wget curl;
 
 # set time GMT +8
 ln -fs /usr/share/zoneinfo/Asia/Malaysia /etc/localtime
@@ -45,9 +55,6 @@ cat jcameron-key.asc | apt-key add -;rm jcameron-key.asc
 # update
 apt-get update
 
-# install webserver
-apt-get -y install nginx
-
 # install essential package
 apt-get -y install bmon iftop htop nmap axel nano iptables traceroute sysv-rc-conf dnsutils bc nethogs openvpn vnstat less screen psmisc apt-file whois ptunnel ngrep mtr git zsh mrtg snmp snmpd snmp-mibs-downloader unzip unrar rsyslog debsums rkhunter
 apt-get -y install build-essential
@@ -58,25 +65,6 @@ sysv-rc-conf exim4 off
 
 # update apt-file
 apt-file update
-
-# install figlet
-apt-get install figlet
-echo "clear" >> .bashrc
-echo 'figlet -k "$HOSTNAME"' >> .bashrc
-echo 'echo -e "Selamat datang ke server $HOSTNAME"' >> .bashrc
-echo 'echo -e "Script mod by Aiman Amir"' >> .bashrc
-echo 'echo -e "Taip menu untuk menampilkan senarai perintah yang tersedia"' >> .bashrc
-echo 'echo -e ""' >> .bashrc
-
-# install webserver
-cd
-rm /etc/nginx/sites-enabled/default
-rm /etc/nginx/sites-available/default
-wget -O /etc/nginx/nginx.conf "https://raw.github.com/blazevpn/autoscript/master/nginx.conf"
-mkdir -p /home/vps/public_html
-echo "<pre>Setup by Aiman Amir | 081515292117</pre>" > /home/vps/public_html/index.html
-wget -O /etc/nginx/conf.d/vps.conf "https://github.com/blazevpn/autoscript/blob/master/vps.conf"
-service nginx restart
 
 # install openvpn
 wget -O /etc/openvpn/openvpn.tar "https://raw.github.com/blazevpn/autoscript/master/openvpn-debian.tar"
@@ -167,8 +155,6 @@ chmod +x about
 
 # finishing
 cd
-chown -R www-data:www-data /home/vps/public_html
-service nginx start
 service openvpn restart
 service cron restart
 service ssh restart
@@ -177,6 +163,10 @@ service squid3 restart
 service webmin restart
 rm -rf ~/.bash_history && history -c
 echo "unset HISTFILE" >> /etc/profile
+
+
+# Copy the VPN Client config into home directory
+cp /etc/openvpn/client.ovpn ~
 
 # info
 clear
